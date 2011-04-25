@@ -6,15 +6,33 @@ import java.util.*;
 public class Graph extends HashSet<Vertex> {
 
 	public Graph() {
-		
+		super();
 	}
 	
+	public Graph(Collection<Vertex> leaves) {
+		this();
+		this.addAll(leaves);
+	}
+
 	public static Graph createGraphFromTriangle(int[][] triangle) throws ArrayNotTriangularException {
 		if (!isTriangleShaped(triangle)){
 			throw new ArrayNotTriangularException();
 		}
+
+		// Populate the bottom row of vertices
+		List<Vertex> children = new ArrayList<Vertex>();
+		for (int i=0; i < triangle[triangle.length - 1].length; i++){
+			children.add(new Vertex(triangle[triangle.length - 1][i]));
+		}
+		Graph graph = new Graph(children);
 		
-		return connectVertices(new Vertex(triangle[0][0]), triangle, 0);
+		for (int childRow=triangle.length - 1; childRow > 0; childRow--){
+			
+			List<Vertex> parents = getParentsAndAttachToChildren(children, triangle[childRow - 1]);
+			graph.addAll(parents);
+			children = parents;
+		}
+		return graph;
 	}
 	
 	private static boolean isTriangleShaped(int[][] triangle){
@@ -26,19 +44,16 @@ public class Graph extends HashSet<Vertex> {
 		return true;
 	}
 	
-	private static Graph connectVertices(Vertex root, int[][] triangle, int index){
-		Graph union = new Graph();
-		if (index > getLastIndexOfRow(triangle.length) - 1) {
-			return union;
+	// Working from the bottom row of leaves means we can create the vertices and the edges in a single pass
+	private static List<Vertex> getParentsAndAttachToChildren(List<Vertex> children, int[] parentWeights){
+		List<Vertex> parentRow = new ArrayList<Vertex>();
+		// Each adjacent pair of children neighbours one unique parent, which we can create and attach to its children
+		for (int i=0; i < children.size() - 1; i++ ){
+			Vertex parent = new Vertex(parentWeights[i]);
+			parent.addNeighbours(children.subList(i, i+2));
+			parentRow.add(parent);
 		}
-		int row = getRowFromIndex(index);
-		int column = index - getLastIndexOfRow(row - 1) - 1;
-		// Add children
-		union.add(new Vertex(triangle[row + 1][column]));
-		union.add(new Vertex(triangle[row + 1][column + 1]));
-		
-		union.addAll(connectVertices(root, triangle, index + 1));
-		return union;
+		return parentRow;	
 	}
 	
 	// Use triangle numbers to move between row/column indices and a single left-to-right index
@@ -49,5 +64,15 @@ public class Graph extends HashSet<Vertex> {
 	
 	private static int getLastIndexOfRow(int row){
 		return (row + 2)*(row + 1)/2 - 1;
+	}
+
+	public Graph getVertices(Colour requiredColour) {
+		Graph colouredVertices = new Graph();
+		for (Vertex vertex : this){
+			if (vertex.getColour() == requiredColour){
+				colouredVertices.add(vertex);
+			}
+		}
+		return colouredVertices;
 	}
 }

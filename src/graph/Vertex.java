@@ -1,19 +1,23 @@
 package graph;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class Vertex {
 
 	private int weight;
+	private int distance;
+	private Colour colour;
 	private Vertex predecessor;
-	private ArrayList<Vertex> neighbours;
+	private Graph neighbours;
 	
 	public Vertex(){
-		this.setWeight(weight);
 		this.setPredecessor(null);
-		neighbours = new ArrayList<Vertex>();
+		this.neighbours = new Graph();
 	}
 
 	public Vertex(int weight) {
+		this();
 		this.setWeight(weight);
 	}
 
@@ -25,6 +29,14 @@ public class Vertex {
 		return weight;
 	}
 
+	public void setDistance(int distance) {
+		this.distance = distance;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
+	
 	public void setPredecessor(Vertex predecessor) {
 		this.predecessor = predecessor;
 	}
@@ -33,11 +45,24 @@ public class Vertex {
 		return predecessor;
 	}
 
-	public void setNeighbours(ArrayList<Vertex> neighbours) {
-		this.neighbours = neighbours;
+	public Graph getNeighbours() {
+		return neighbours;
 	}
 
-	public ArrayList<Vertex> getNeighbours() {
-		return neighbours;
+	public void addNeighbours(Collection<Vertex> children) {
+		this.neighbours.addAll(children);
+		
+	}
+
+	public void setColour(Colour colour) {
+		this.colour = colour;
+	}
+
+	public Colour getColour() {
+		return colour;
+	}
+
+	public Graph getNeighbours(Colour requiredColour) {
+		return this.getNeighbours().getVertices(requiredColour);
 	}
 }
