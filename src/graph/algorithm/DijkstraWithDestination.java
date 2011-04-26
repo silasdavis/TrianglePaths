@@ -67,6 +67,7 @@ public class DijkstraWithDestination {
 			int distanceThroughVertex = vertex.getDistance() + neighbour.getWeight();
 			if (distanceThroughVertex < neighbour.getDistance()){
 				neighbour.setDistance(distanceThroughVertex);
+				neighbour.setPredecessor(vertex);
 			}
 		}
 		// improve upon the current minimally close vertex
