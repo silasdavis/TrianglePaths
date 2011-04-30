@@ -25,14 +25,14 @@ public class DirectedAcyclicGraph extends Graph {
 			children.add(new Vertex(triangle[triangle.length - 1][i]));
 		}
 		DirectedAcyclicGraph graph = new DirectedAcyclicGraph(children);
-		graph.setInitialVertices(children);
+		graph.setTerminalVertices(children);
 		
 		for (int childRow=triangle.length - 1; childRow > 0; childRow--){
 			List<Vertex> parents = getParentsAndAttachToChildren(children, triangle[childRow - 1]);
 			graph.addAll(parents);
 			children = parents;
 		}
-		graph.setTerminalVertices(children);
+		graph.setInitialVertices(children);
 		return graph;
 	}
 	
@@ -58,14 +58,14 @@ public class DirectedAcyclicGraph extends Graph {
 	}
 
 	public void setInitialVertices(Collection<Vertex> initialVertices) {
-		this.initialVertices = (Graph) initialVertices;
+		this.initialVertices = new Graph(initialVertices);
 	}
 	
 	public Graph getInitialVertices() {
 		return initialVertices;
 	}
 	public void setTerminalVertices(Collection<Vertex>  terminalVertices) {
-		this.terminalVertices = (Graph) terminalVertices;
+		this.terminalVertices = new Graph(terminalVertices);
 	}
 	public Graph getTerminalVertices() {
 		return terminalVertices;

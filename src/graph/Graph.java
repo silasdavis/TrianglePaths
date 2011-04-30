@@ -14,6 +14,14 @@ public class Graph extends HashSet<Vertex> {
 		this.addAll(vertices);
 	}
 	
+	// Axiom of choice
+	public Vertex choose(){
+		for (Vertex vertex : this){
+			return vertex;
+		}
+		return null;
+	}
+	
 	// Use triangle numbers to move between row/column indices and a single left-to-right index
 	// Note the triangle index is naturally 1-based
 	private static int getRowFromIndex(int index){

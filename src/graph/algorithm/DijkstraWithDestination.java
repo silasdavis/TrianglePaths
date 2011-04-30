@@ -2,6 +2,7 @@ package graph.algorithm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,10 +39,21 @@ public class DijkstraWithDestination {
 		Vertex vertex = minimallyCloseVertex;
 		do  {
 			path.offerFirst(vertex);
-			vertex = minimallyCloseVertex.getPredecessor();
+			vertex = vertex.getPredecessor();
 		} while(vertex.getPredecessor() != null);
+		path.offerFirst(vertex);
 		
 		return path;
+	}
+	
+	public String getMinimalPathString(){
+		Iterator<Vertex> iterator = getMinimalPath().iterator();
+		StringBuilder path = new StringBuilder(Integer.toString(iterator.next().getWeight()));
+		while (iterator.hasNext()){
+			path.append(" + ").append(iterator.next().getWeight());
+		}
+		path.append(" = " + getMinimalPathLength());
+		return path.toString();
 	}
 	
 	public int getMinimalPathLength(){
@@ -52,6 +64,9 @@ public class DijkstraWithDestination {
 		List<Vertex> unvisited = new ArrayList<Vertex>(this.graph.getVertices(Colour.White));
 		Comparator<Vertex> distanceComparator = new VertexSortByDistance();
 		Collections.sort(unvisited, distanceComparator);
+		// since we're about to finalise the nearest unvisited vertex, its current distance is final, so
+		// only if that distance is strictly less than any current minimal path length can visiting it
+		// improve on the path
 		while (unvisited.size() > 0 && unvisited.get(0).getDistance() < this.minimalPathLength){
 			visit(unvisited.get(0), unvisited);
 			unvisited = unvisited.subList(1, unvisited.size());
@@ -71,8 +86,7 @@ public class DijkstraWithDestination {
 			}
 		}
 		// improve upon the current minimally close vertex
-		if (this.destination.contains(unvisited) &&
-				(this.minimallyCloseVertex == null ^ this.minimalPathLength > vertex.getDistance())){
+		if (this.destination.contains(vertex) && this.minimalPathLength > vertex.getDistance()){
 			this.minimallyCloseVertex = vertex;
 			this.minimalPathLength = vertex.getDistance();
 		}
