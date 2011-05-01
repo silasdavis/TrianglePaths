@@ -14,7 +14,7 @@ public class DirectedAcyclicGraph extends Graph {
 		super(vertices);
 	}
 	
-	public static DirectedAcyclicGraph createGraphFromTriangle(int[][] triangle) throws ArrayNotTriangularException {
+	public static DirectedAcyclicGraph createGraphFromTriangle(Integer[][] triangle) throws ArrayNotTriangularException {
 		if (!isTriangleShaped(triangle)){
 			throw new ArrayNotTriangularException();
 		}
@@ -36,7 +36,7 @@ public class DirectedAcyclicGraph extends Graph {
 		return graph;
 	}
 	
-	private static boolean isTriangleShaped(int[][] triangle){
+	private static boolean isTriangleShaped(Integer[][] triangle){
 		for (int row=0; row < triangle.length; row++){
 			if (triangle[row].length != row + 1){
 				return false;
@@ -46,11 +46,11 @@ public class DirectedAcyclicGraph extends Graph {
 	}
 	
 	// Working from the bottom row of leaves means we can create the vertices and the edges in a single pass
-	private static List<Vertex> getParentsAndAttachToChildren(List<Vertex> children, int[] parentWeights){
+	private static List<Vertex> getParentsAndAttachToChildren(List<Vertex> children, Integer[] triangle){
 		List<Vertex> parentRow = new ArrayList<Vertex>();
 		// Each adjacent pair of children neighbours one unique parent, which we can create and attach to its children
 		for (int i=0; i < children.size() - 1; i++ ){
-			Vertex parent = new Vertex(parentWeights[i]);
+			Vertex parent = new Vertex(triangle[i]);
 			parent.addNeighbours(children.subList(i, i+2));
 			parentRow.add(parent);
 		}
@@ -69,6 +69,17 @@ public class DirectedAcyclicGraph extends Graph {
 	}
 	public Graph getTerminalVertices() {
 		return terminalVertices;
+	}
+
+	public static DirectedAcyclicGraph createGraphFromTriangle(
+			ArrayList<ArrayList<Integer>> triangleList) throws ArrayNotTriangularException {
+		Integer[][] triangle = new Integer[triangleList.size()][];
+		for (int i=0; i < triangleList.size(); i++){
+			ArrayList<Integer> rowFrom = triangleList.get(i);
+			Integer[] rowTo = new Integer[rowFrom.size()];
+			triangle[i] = rowFrom.toArray(rowTo);
+		}
+		return createGraphFromTriangle(triangle);
 	}
 	
 }
